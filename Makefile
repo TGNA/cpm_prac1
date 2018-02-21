@@ -1,7 +1,7 @@
 CC = gcc
 SRC = main.c
 BIN = prac
-CFLAGS = -ansi -Wall -g -O -fopenmp
+CFLAGS = -Wall -g -O -fopenmp
 
 all : build
 
