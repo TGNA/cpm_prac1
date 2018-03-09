@@ -1,0 +1,19 @@
+Problema del viatjant de Comerç (TSP).
+
+Temps d'execució seqüencial amb les opcions "-O3"
+
+Per a 2000 ciutats -> 50 segons,
+
+Per a 3000 ciutats -> 165 segons
+
+    Es programarà amb OpenMP
+    Speedup mínim  a GAT: 3
+    La versió paral·lela ha de donar el mateix resultat que la seqüencial.
+
+(OPCIONAL) Per la maquina teen (16 cores) veure quin speedup s'aconsegueix:
+
+Per a 2000 ciutats -> 12,75 segons
+
+Per a 3000 ciutats -> 50 segons
+
+Per a 4000 ciutats -> 133 segons
