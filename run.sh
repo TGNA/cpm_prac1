@@ -1,5 +1,7 @@
 #!/bin/bash
 
+make clean
+
 make build
 
 echo "Running synchronous..."
