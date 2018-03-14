@@ -54,7 +54,7 @@ float dmin,dist,millor;
         cami[primer]=0;
         actual = primer;
 
-        #pragma omp parallel for //private(index, dmin, j)
+        #pragma omp parallel for private(index, dmin, j)
         for (i=1; i<nn; i++) {
             dmin = GRAN;
             index=0; // redundant
