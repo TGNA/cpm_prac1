@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-RUN apk add --no-cache gcc musl-dev make
+RUN apk add --no-cache gcc musl-dev make bc
 
 WORKDIR /home
 
