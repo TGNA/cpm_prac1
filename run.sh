@@ -4,6 +4,11 @@ make clean
 
 make build
 
+if [ $? -ne 0 ]; then
+    echo "Compilation failed ☠️"
+    exit 1
+fi
+
 echo "Running synchronous..."
 TSEQ=$( { time -f%e ./prac_s $1 > ./output/synchronous_$1.txt; } 2>&1 )
 echo "Time: $TSEQ"
