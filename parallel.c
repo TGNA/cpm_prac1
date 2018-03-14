@@ -44,7 +44,7 @@ float dmin,dist,millor;
 
     millor = GRAN;
 
-    #pragma omp for 
+    #pragma omp parallel for ordered
     // #pragma omp for
     for (primer=0; primer<nn; primer++) {
         dist = 0;
@@ -54,7 +54,7 @@ float dmin,dist,millor;
 
         cami[primer]=0;
         actual = primer;
-        // #pragma omp ordered
+        #pragma omp ordered
         // #pragma omp parallel for schedule(static) reduction(+:dist)
         for (i=1; i<nn; i++) {
             dmin = GRAN;
