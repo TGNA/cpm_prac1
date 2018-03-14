@@ -54,7 +54,7 @@ float dmin,dist,millor;
         cami[primer]=0;
         actual = primer;
 
-        // #pragma omp parallel for schedule(static) reduction(+:dist)
+        #pragma omp parallel for //private(index, dmin, j)
         for (i=1; i<nn; i++) {
             dmin = GRAN;
             index=0; // redundant
@@ -86,9 +86,9 @@ float dmin,dist,millor;
     }
 
     printf("Solucio :\n");
-    // #pragma omp parallel for ordered
+    #pragma omp parallel for ordered
     for(i=0; i<nn; i++)
-        // #pragma omp ordered
+        #pragma omp ordered
         printf("%d\n",bo[i]);
     printf ("Distancia %g == %g\n",millor,distancia[bo[0]][nn]);
 
