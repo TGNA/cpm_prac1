@@ -3,7 +3,7 @@ SRC_S = synchronous.c
 BIN_S = prac_s
 SRC_P = parallel.c
 BIN_P = prac_p
-CFLAGS = -Wall -g -O3 -fopenmp
+CFLAGS = -Wall -g -O3 -fopenmp -lm
 
 all : build
 
