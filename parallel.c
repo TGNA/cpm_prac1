@@ -44,8 +44,7 @@ float dmin,dist,millor;
 
     millor = GRAN;
 
-    #pragma omp parallel for ordered
-    // #pragma omp for
+    #pragma omp parallel for default(none) shared(millor, distancia, bo, nn) private(dist, dmin, primer, index, i, actual, j)
     for (primer=0; primer<nn; primer++) {
         dist = 0;
 
@@ -54,7 +53,7 @@ float dmin,dist,millor;
 
         cami[primer]=0;
         actual = primer;
-        #pragma omp ordered
+
         // #pragma omp parallel for schedule(static) reduction(+:dist)
         for (i=1; i<nn; i++) {
             dmin = GRAN;
@@ -74,19 +73,22 @@ float dmin,dist,millor;
         if (dist) {
             dmin = distancia[actual][primer];
             dist += dmin;
-            if (dist < millor) {
-                for(i=0;i<nn;i++) 
-                    bo[cami[i]]=i;
-                millor = dist;
+            #pragma omp critical
+            {
+                if (dist < millor) {
+                    for(i=0;i<nn;i++) 
+                        bo[cami[i]]=i;
+                    millor = dist;
+                }
             }
             distancia[primer][nn]=dist;  // per guardar alternatives
         }
     }
 
     printf("Solucio :\n");
-    #pragma omp parallel for ordered
+    // #pragma omp parallel for ordered
     for(i=0; i<nn; i++)
-        #pragma omp ordered
+        // #pragma omp ordered
         printf("%d\n",bo[i]);
     printf ("Distancia %g == %g\n",millor,distancia[bo[0]][nn]);
 
