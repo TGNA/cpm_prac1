@@ -13,6 +13,8 @@ float distancia[N][N+1];
 
 int cami[N],bo[N];
 
+#pragma omp threadprivate(cami)
+
 int main(int na, char* arg[])
 {
 int nn,i,j,primer,actual,index;
@@ -42,20 +44,21 @@ float dmin,dist,millor;
 
     millor = GRAN;
 
-    // #pragma omp parallel for private(i,j)
+    #pragma omp for 
+    // #pragma omp for
     for (primer=0; primer<nn; primer++) {
         dist = 0;
 
-        // #pragma omp for
+        // #pragma omp parallel for
         for(i=0;i<nn;i++) cami[i]=-1;
 
         cami[primer]=0;
         actual = primer;
-        #pragma omp for
+        // #pragma omp ordered
+        // #pragma omp parallel for schedule(static) reduction(+:dist)
         for (i=1; i<nn; i++) {
             dmin = GRAN;
             index=0; // redundant
-            // #pragma omp for
             for (j=0; j<nn; j++) {
                 if (cami[j]==-1 && actual!=j && distancia[actual][j] < dmin) {
                     dmin = distancia[actual][j];
@@ -72,7 +75,6 @@ float dmin,dist,millor;
             dmin = distancia[actual][primer];
             dist += dmin;
             if (dist < millor) {
-                #pragma omp for
                 for(i=0;i<nn;i++) 
                     bo[cami[i]]=i;
                 millor = dist;
