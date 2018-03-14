@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
+#include <omp.h>
+#include <string.h>
 
 #define N 5000
 #define GRAN (2*pow(N*10,2))
@@ -38,45 +40,53 @@ float dmin,dist,millor;
 
 // TOTs amb Greedy
 
-    #pragma omp critical
-    {
+    millor = GRAN;
 
-        millor = GRAN;
-        for (primer=0; primer<nn; primer++) {
-            dist = 0;
-            for(i=0;i<nn;i++) cami[i]=-1;
-            cami[primer]=0;
-            actual = primer;
-            for (i=1; i<nn; i++) {
-                dmin = GRAN;
-                index=0; // redundant
-                for (j=0; j<nn; j++) {
-                    if (cami[j]==-1 && actual!=j && distancia[actual][j] < dmin) {
-                        dmin = distancia[actual][j];
-                        index= j;
-                    }
+    // #pragma omp parallel for private(i,j)
+    for (primer=0; primer<nn; primer++) {
+        dist = 0;
+
+        // #pragma omp for
+        for(i=0;i<nn;i++) cami[i]=-1;
+
+        cami[primer]=0;
+        actual = primer;
+        #pragma omp for
+        for (i=1; i<nn; i++) {
+            dmin = GRAN;
+            index=0; // redundant
+            // #pragma omp for
+            for (j=0; j<nn; j++) {
+                if (cami[j]==-1 && actual!=j && distancia[actual][j] < dmin) {
+                    dmin = distancia[actual][j];
+                    index= j;
                 }
-                actual = index;
-                cami[actual] = i;
-                dist += dmin;
-                // PODA
-                if (dist >= millor) { dist = 0; break;}
             }
-            if (dist) {
-                dmin = distancia[actual][primer];
-                dist += dmin;
-                if (dist < millor) {
-                    for(i=0;i<nn;i++) bo[cami[i]]=i;
-                    millor = dist;
-                }
-                distancia[primer][nn]=dist;  // per guardar alternatives
-            }
+            actual = index;
+            cami[actual] = i;
+            dist += dmin;
+            // PODA
+            // if (dist >= millor) { dist = 0; break;}
         }
-        
-        printf("Solucio :\n");
-        for(i=0; i<nn; i++) printf("%d\n",bo[i]);
-        printf ("Distancia %g == %g\n",millor,distancia[bo[0]][nn]);
-
-        exit(0);
+        if (dist) {
+            dmin = distancia[actual][primer];
+            dist += dmin;
+            if (dist < millor) {
+                #pragma omp for
+                for(i=0;i<nn;i++) 
+                    bo[cami[i]]=i;
+                millor = dist;
+            }
+            distancia[primer][nn]=dist;  // per guardar alternatives
+        }
     }
+
+    printf("Solucio :\n");
+    #pragma omp parallel for ordered
+    for(i=0; i<nn; i++)
+        #pragma omp ordered
+        printf("%d\n",bo[i]);
+    printf ("Distancia %g == %g\n",millor,distancia[bo[0]][nn]);
+
+    exit(0);
 }
