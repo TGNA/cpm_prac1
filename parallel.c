@@ -17,13 +17,16 @@ int cami[N],bo[N];
 
 int main(int na, char* arg[])
 {
-int nn,i,j,primer,actual,index;
-float dmin,dist,millor;
+    int nn,i,j,primer,actual,index;
+    float dmin,dist,millor;
 
     assert(na == 2);
     printf("Dimensio %s\n",arg[1]);
     nn=atoi(arg[1]);
     assert(nn<=N);
+
+    omp_set_dynamic(0);
+    omp_set_num_threads(4);
 
     // #pragma omp for
     for(i=0; i<nn; i++) X[i]=rand()%(nn*10);
@@ -44,7 +47,7 @@ float dmin,dist,millor;
 
     millor = GRAN;
 
-    #pragma omp parallel for default(none) shared(millor, distancia, bo, nn) private(dist, dmin, primer, index, i, actual, j)
+    #pragma omp parallel for default(none) shared(millor, distancia, bo, nn) private(dist, dmin, index, i, actual, j)
     for (primer=0; primer<nn; primer++) {
         dist = 0;
 
