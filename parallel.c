@@ -28,36 +28,33 @@ int main(int na, char* arg[])
     omp_set_dynamic(0);
     omp_set_num_threads(4);
 
-    // #pragma omp for
     for(i=0; i<nn; i++) X[i]=rand()%(nn*10);
-
-    // #pragma omp for
     for(i=0; i<nn; i++) Y[i]=rand()%(nn*10);
       
-    #pragma omp for
-    for(i=0; i<nn; i++) distancia[i][i]=0;
+    #pragma omp parallel
+    {
+        #pragma omp for
+        for(i=0; i<nn; i++) distancia[i][i]=0;
 
-    #pragma omp parallel for private(j)
-    for(i=0; i<nn; i++)  
-        for(j=i+1; j<nn; j++) 
-            distancia[i][j]= distancia[j][i] = sqrt(pow(X[i]-X[j],2) + pow(Y[i]-Y[j],2));
-
+        #pragma omp for private(j)
+        for(i=0; i<nn; i++)  
+            for(j=i+1; j<nn; j++) 
+                distancia[i][j]= distancia[j][i] = sqrt(pow(X[i]-X[j],2) + pow(Y[i]-Y[j],2));
+    }
 
 // TOTs amb Greedy
 
     millor = GRAN;
 
-    #pragma omp parallel for default(none) shared(millor, distancia, bo, nn) private(dist, dmin, index, i, actual, j)
+    #pragma omp parallel for default(none) shared(millor, distancia, bo, nn) private(dist, dmin, index, i, actual, j) schedule(dynamic,1)
     for (primer=0; primer<nn; primer++) {
         dist = 0;
 
-        // #pragma omp parallel for
         for(i=0;i<nn;i++) cami[i]=-1;
 
         cami[primer]=0;
         actual = primer;
 
-        #pragma omp parallel for private(index, dmin, j)
         for (i=1; i<nn; i++) {
             dmin = GRAN;
             index=0; // redundant
@@ -71,7 +68,7 @@ int main(int na, char* arg[])
             cami[actual] = i;
             dist += dmin;
             // PODA
-            // if (dist >= millor) { dist = 0; break;}
+            if (dist >= millor) { dist = 0; break;}
         }
         if (dist) {
             dmin = distancia[actual][primer];
